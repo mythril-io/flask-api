@@ -18,8 +18,7 @@ migrate.init_app(app, db)
 guard.init_app(app, User)
 cors.init_app(app)
 ma.init_app(app)
-if app.config.get('MAIL_SERVER'):
-    mail.init_app(app)
+mail.init_app(app)
 
 # Register blueprints
 app.register_blueprint(api_v1)
