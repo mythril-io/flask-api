@@ -10,7 +10,7 @@ api = Namespace('home', description='Home page operations')
 
 @api.route('/')
 class Home(Resource):
-    def getStats(self):
+    def get(self):
         """
         Get all Stats used on the Home page
         """
@@ -31,5 +31,5 @@ class Home(Resource):
         response = {
             'stats': stats,
         }
-        
+
         return response
