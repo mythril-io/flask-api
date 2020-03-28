@@ -129,7 +129,7 @@ class SingleLibraryEntry(Resource):
 
 @api.route('/recent')
 class RecentLibraryEntries(Resource):
-    def get(self, id):
+    def get(self):
         """
         Get Recent Library Entries
         """
