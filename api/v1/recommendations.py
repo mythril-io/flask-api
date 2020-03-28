@@ -147,6 +147,16 @@ class SingleRecommendation(Resource):
         
         return { 'message': 'Recommendation deleted successfully' }
 
+@api.route('/recent')
+class RecentRecommendation(Resource):
+    def get(self):
+        """
+        Get Recent Recommendation
+        """
+        recommendation = Recommendation.query.order_by(Recommendation.created_at.desc()).limit(1).first()
+
+        return recommendation_schema.dump(recommendation)
+
 @api.route('/game/<int:id>', defaults={ 'page': 1 }, methods=['GET'])
 @api.route('/game/<int:id>/page/<int:page>', methods=['GET'])
 class GameRecommendations(Resource):

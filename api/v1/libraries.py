@@ -127,6 +127,16 @@ class SingleLibraryEntry(Resource):
         
         return { 'message': 'Library Entry deleted successfully' }
 
+@api.route('/recent')
+class RecentLibraryEntries(Resource):
+    def get(self, id):
+        """
+        Get Recent Library Entries
+        """
+        recent_library_entries = LibraryEntry.query.order_by(LibraryEntry.created_at.desc()).limit(8).all()
+
+        return library_entries_schema.dump(recent_library_entries)
+
 @api.route('/user/<int:id>')
 class UserLibrary(Resource):
     def get(self, id):

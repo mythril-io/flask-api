@@ -231,6 +231,16 @@ class SingleGame(Resource):
         
         return { 'message': 'Game deleted successfully' }
 
+@api.route('/trending')
+class TrendingGames(Resource):
+    def get(self):
+        """
+        Get Trending Games
+        """
+        games = Game.query.order_by(Game.trending_page_views.desc()).limit(6).all()
+
+        return games_schema.dump(games)
+
 @api.route('/icon/<int:id>')
 class GameIcon(Resource):  
     @flask_praetorian.roles_required('admin')

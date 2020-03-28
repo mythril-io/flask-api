@@ -150,6 +150,16 @@ class SingleReview(Resource):
         
         return { 'message': 'Review deleted successfully' }
 
+@api.route('/recent')
+class RecentReview(Resource):
+    def get(self):
+        """
+        Get Recent Review
+        """
+        review = Review.query.order_by(Review.created_at.desc()).limit(1).first()
+        
+        return review_schema.dump(review)
+
 @api.route('/game/<int:id>', defaults={ 'page': 1 }, methods=['GET'])
 @api.route('/game/<int:id>/page/<int:page>', methods=['GET'])
 class GameReviews(Resource):
