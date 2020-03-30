@@ -9,7 +9,7 @@ class DateType(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     format = db.Column(db.String, nullable=False)
-    releases = db.relationship('Release', backref='date_type', lazy=False)
+    releases = db.relationship('Release', backref='date_type')
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.now)
     updated_at = db.Column(db.DateTime, nullable=True, default=datetime.now, onupdate=datetime.now)
 

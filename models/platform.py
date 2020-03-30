@@ -10,7 +10,7 @@ class Platform(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     acronym = db.Column(db.String, nullable=True)
-    releases = db.relationship('Release', backref='platform', lazy=False)
+    releases = db.relationship('Release', backref='platform')
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.now)
     updated_at = db.Column(db.DateTime, nullable=True, default=datetime.now, onupdate=datetime.now)
 
