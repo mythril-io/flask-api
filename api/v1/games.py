@@ -54,7 +54,7 @@ class Games(Resource):
         # Apply filters if applicable
         if search:
             query = query.filter(Game.title.like('%' + search + '%'))
-        if score:
+        if score and int(score) > 0:
             query = query.filter(Game.score >= score)
         if developer_ids:
             developer_list = developer_ids.split(",")
