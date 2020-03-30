@@ -42,9 +42,9 @@ class Discussion(db.Model):
     updated_at = db.Column(db.DateTime, nullable=True, default=datetime.now, onupdate=datetime.now)
 
     user = db.relationship('User')
-    games = db.relationship('Game', secondary=discussion_game, lazy=False, backref=db.backref('discussions', lazy=False))
-    tags = db.relationship('Tag', secondary=discussion_tag, lazy=False, backref=db.backref('discussions', lazy=False))
-    posts = db.relationship('Post', backref='discussion', lazy=False)
+    games = db.relationship('Game', secondary=discussion_game, backref=db.backref('discussions'))
+    tags = db.relationship('Tag', secondary=discussion_tag, backref=db.backref('discussions'))
+    posts = db.relationship('Post', backref='discussion')
 
     def __repr__(self):
         return '<Discussion %r>' % self.title

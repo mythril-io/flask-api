@@ -24,8 +24,8 @@ class User(db.Model):
     email = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
     is_verified = db.Column(db.Integer, default=0)
-    roles = db.relationship('Role', secondary=user_role, lazy='subquery',
-        backref=db.backref('users', lazy=False))
+    roles = db.relationship('Role', secondary=user_role,
+        backref=db.backref('users'))
     about_me = db.Column(db.Text, unique=False, nullable=True)
     avatar = db.Column(db.String, unique=False, nullable=True)
     banner = db.Column(db.String, unique=False, nullable=True)

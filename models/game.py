@@ -25,8 +25,8 @@ class Game(db.Model):
     popularity_rank = db.Column(db.Integer, nullable=True)
     trending_page_views = db.Column(db.Integer, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    releases = db.relationship('Release', backref='games', lazy=False, cascade="all")
-    genres = db.relationship('Genre', secondary=game_genre, lazy=False, backref=db.backref('games', lazy=False))
+    releases = db.relationship('Release', backref='games', cascade="all")
+    genres = db.relationship('Genre', secondary=game_genre, backref=db.backref('games'))
     created_at = db.Column(db.DateTime, default=datetime.now)
     updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
     
