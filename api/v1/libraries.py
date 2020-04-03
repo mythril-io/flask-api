@@ -202,7 +202,7 @@ class RecentGameLibrary(Resource):
         Get recent Library Entries by Game id
         """
         
-        recent_library = LibraryEntry.query.filter(LibraryEntry.game_id==id).order_by(LibraryEntry.created_at.asc()).limit(4).all()
+        recent_library = LibraryEntry.query.filter(LibraryEntry.game_id==id).order_by(LibraryEntry.created_at.desc()).limit(4).all()
         if recent_library is None:
             return { 'message': 'No Library Entries for specified Game'}, 404
 
