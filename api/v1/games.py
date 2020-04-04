@@ -1,13 +1,13 @@
 import flask_praetorian
-from flask import request
+from flask import request, json
 from flask_restx import Namespace, Resource, Api, fields
 from extensions import guard, db, upload_img, delete_img
 from marshmallow import ValidationError, INCLUDE
 from utilities import get_auto_increment, base64_to_pillow_img, pillow_img_to_bytes
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
-from models import Game, Genre, User, Release
+from models import Game, Genre, User, Release, Favourite, LibraryEntry
 from .schemas import games_schema, game_schema, genres_schema, user_schema, GameSchema
 from . import api as api_v1
 
@@ -240,6 +240,39 @@ class TrendingGames(Resource):
         games = Game.query.order_by(Game.trending_page_views.desc()).limit(6).all()
 
         return games_schema.dump(games)
+
+@api.route('/<int:id>/userStatus')
+class UserStatus(Resource):
+    @flask_praetorian.auth_required
+    def get(self, id):
+        """
+        Get User Library and Favourite Status
+        """
+        current_user = flask_praetorian.current_user()
+        favourite = False
+        library = False
+
+        favourite_count = Favourite.query.filter(and_(
+                Favourite.user_id==current_user.id, 
+                Favourite.game_id==id
+            )).count()
+
+        if favourite_count > 0:
+            favourite = True
+
+        library_count = LibraryEntry.query.filter(and_(
+                LibraryEntry.user_id==current_user.id, 
+                LibraryEntry.game_id==id
+            )).count()
+
+        if library_count > 0:
+            library = True
+
+        response = {
+            'favourite': json.dumps(favourite),
+            'library': json.dumps(library)
+        }
+        return response
 
 @api.route('/icon/<int:id>')
 class GameIcon(Resource):  
