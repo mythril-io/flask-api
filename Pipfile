@@ -22,6 +22,7 @@ pillow = "*"
 python-dotenv = "*"
 flask-migrate = "*"
 gunicorn = "*"
+requests = "*"
 
 [requires]
 python_version = "3.8"
