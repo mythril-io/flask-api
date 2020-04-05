@@ -4,7 +4,7 @@ from flask_restx import Namespace, Resource, Api, reqparse, fields
 from extensions import guard, db, upload_img, delete_img
 from marshmallow import ValidationError, INCLUDE
 from utilities import base64_to_pillow_img, pillow_img_to_bytes, base64_validation, get_base64_file_type
-
+import os, requests
 
 from models import User
 from .schemas import users_schema, user_schema, roles_schema
@@ -116,6 +116,22 @@ class Register(Resource):
         username = req.get('username', None)
         email = req.get('email', None)
         password = req.get('password', None)
+        recaptchaToken = req.get('recaptchaToken', None)
+
+        # Verify recaptchaToken via Google's recaptcha API
+        if recaptchaToken is None:
+            return { 'message': 'Missing recaptcha token'}, 500
+
+        payload = {
+            'secret': os.getenv('CAPTCHA_SECRET'),
+            'response': recaptchaToken
+        }
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data = payload)
+
+        if r.json()['success'] is False:
+            return { 'message': 'Invalid recaptcha token'}, 500
+
+        # Instantiate new User
         new_user = User(
             username=username,
             password=guard.hash_password(password),
