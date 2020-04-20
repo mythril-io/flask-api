@@ -1,9 +1,10 @@
 from extensions import db
 from datetime import datetime
+from .likeable import HasLikes
 
 __all__ = ['Review']
 
-class Review(db.Model):
+class Review(HasLikes, db.Model):
     __tablename__ = 'reviews'
     __table_args__ = {'extend_existing': True}
 
