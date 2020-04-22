@@ -42,6 +42,7 @@ def setup_listener(mapper, class_):
 
     class_.likes = column_property(
         select([func.count('*')]).where(and_(
+                Likeable.likeable_type == type,
                 Likeable.likeable_id == class_.id,
                 Likeable.value == 1, 
             )).correlate_except(Likeable)
@@ -49,6 +50,7 @@ def setup_listener(mapper, class_):
 
     class_.dislikes = column_property(
         select([func.count('*')]).where(and_(
+                Likeable.likeable_type == type,
                 Likeable.likeable_id == class_.id,
                 Likeable.value == 0, 
             )).correlate_except(Likeable)
