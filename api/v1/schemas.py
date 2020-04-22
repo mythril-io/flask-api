@@ -99,6 +99,17 @@ user_schema = UserSchema()
 users_schema = UserSchema(only=("id", "username", "avatar", "rolenames"), many=True)
 nested_user_schema = UserSchema(only=("id", "username", "avatar", "rolenames"))
 
+# LikeableSchema
+class LikeableSchema(ma.ModelSchema):  
+    user = fields.Nested(nested_user_schema)
+
+    class Meta:
+        model = Likeable
+        sqla_session = db.session
+        fields = ("value", "user")
+
+likeables_schema = LikeableSchema(many=True)
+
 # ReleaseSchema
 class ReleaseSchema(ma.ModelSchema):
     platform = fields.Nested(platform_schema)
@@ -158,13 +169,16 @@ class ReviewSchema(ma.ModelSchema):
     user = fields.Nested(user_schema)
     game = fields.Nested(nested_game_schema)
     release = fields.Nested(release_schema)
+    likeables = fields.Nested(likeables_schema)
+    likes = fields.Int()
+    dislikes = fields.Int()
 
     class Meta:
         model = Review
         sqla_session = db.session
 
-review_schema = ReviewSchema()
-reviews_schema = ReviewSchema(many=True)
+review_schema = ReviewSchema(exclude=("likeables",))
+reviews_schema = ReviewSchema(exclude=("likeables",), many=True)
 review_post_schema = ReviewSchema(only=("game.id", "summary", "content", "score", "user", "release"))
 review_patch_schema = ReviewSchema(only=("id", "summary", "content"))   
 
