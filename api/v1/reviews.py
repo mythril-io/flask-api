@@ -6,6 +6,7 @@ from marshmallow import ValidationError
 from models import Review
 from .schemas import review_schema, reviews_schema, user_schema, review_post_schema, review_patch_schema
 from . import api as api_v1
+from api.v1.likeables import Likeables
 
 api = Namespace('reviews', description='Review operations')
 
@@ -207,3 +208,80 @@ class UserReviews(Resource):
             'total': reviews.total       
         }
         return response
+
+@api.route('/<int:id>/like')
+class LikeReview(Resource):
+    @flask_praetorian.auth_required
+    def post(self, id):
+        """
+        Like a Review by id
+        """
+        current_user = flask_praetorian.current_user()
+
+        # Find Review
+        review = Review.query.filter_by(id=id).first()
+        if review is None:
+            return { 'message': 'Review does not exist'}, 404
+
+        # Like the Review
+        status_code = Likeables.create(Likeables, current_user.id, Review.__name__.lower(), review.id, 1)
+
+        if status_code == 500:
+            return { 'message': 'Unable to update like status for Review'}, 500
+        if status_code == 404:
+            return { 'message': 'Unable to find like for Review'}, 404
+
+        # Get likes/dislikes count
+        count = Likeables.getCount(Likeables, Review.__name__.lower(), review.id)
+        user_sentiment = Likeables.getUserSentiment(Likeables, current_user.id, Review.__name__.lower(), review.id)
+        
+        response = {
+            'like_count': count.get('like_count'),
+            'dislike_count': count.get('dislike_count'),
+            'user_sentiment': user_sentiment.get('user_sentiment')
+        }
+        return response
+
+@api.route('/<int:id>/dislike')
+class DislikeReview(Resource):
+    @flask_praetorian.auth_required
+    def post(self, id):
+        """
+        Disike a Review by id
+        """
+        current_user = flask_praetorian.current_user()
+
+        # Find Review
+        review = Review.query.filter_by(id=id).first()
+        if review is None:
+            return { 'message': 'Review does not exist'}, 404
+
+        # Dislike the Review
+        status_code = Likeables.create(Likeables, current_user.id, Review.__name__.lower(), review.id, 0)
+
+        if status_code == 500:
+            return { 'message': 'Unable to update like status for Review'}, 500
+        if status_code == 404:
+            return { 'message': 'Unable to find dislike for Review'}, 404
+
+        # Get likes/dislikes count
+        count = Likeables.getCount(Likeables, Review.__name__.lower(), review.id)
+        user_sentiment = Likeables.getUserSentiment(Likeables, current_user.id, Review.__name__.lower(), review.id)
+        
+        response = {
+            'like_count': count.get('like_count'),
+            'dislike_count': count.get('dislike_count'),
+            'user_sentiment': user_sentiment.get('user_sentiment')
+        }
+        return response
+
+@api.route('/<int:id>/user-sentiment')
+class UserSentiment(Resource):
+    @flask_praetorian.auth_required
+    def get(self, id):
+        """
+        Get User like/dislike by Review
+        """
+        current_user = flask_praetorian.current_user()
+
+        return Likeables.getUserSentiment(Likeables, current_user.id, Review.__name__.lower(), id)

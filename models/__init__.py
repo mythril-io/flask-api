@@ -7,6 +7,7 @@ from .developer import Developer
 from .genre import Genre
 from .role import Role
 from .play_status import PlayStatus
+from .likeable import Likeable
 from .user import User, user_role
 from .release import Release
 from .library_entry import LibraryEntry
