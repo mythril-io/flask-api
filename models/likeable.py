@@ -15,7 +15,7 @@ class Likeable(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, primary_key=True)
     likeable_id = db.Column(db.Integer, nullable=False, primary_key=True)
-    likeable_type = db.Column(db.String, nullable=False)
+    likeable_type = db.Column(db.String, nullable=False, primary_key=True)
     value = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.now)
     updated_at = db.Column(db.DateTime, nullable=True, default=datetime.now, onupdate=datetime.now)
