@@ -1,28 +1,26 @@
-import flask_praetorian
 from extensions import db
 from sqlalchemy import or_, and_
 
 from models import Likeable
 
 class Likeables():
-    def like(self, likeable_id, likeable_name, value):
+    def create(self, user_id, likeable_type, likeable_id, value):
         """
         Like/Dislike a model
         """
-
         # Fetch likeable
-        current_user = flask_praetorian.current_user()
-        likeable = Likeable.query.filter_by(and_(
-                Likeable.user_id == current_user.id, 
-                Likeable.likeable_id == likeable_id
+        likeable = Likeable.query.filter(and_(
+                Likeable.user_id == user_id, 
+                Likeable.likeable_type == likeable_type,
+                Likeable.likeable_id == likeable_id,
             )).first()
 
         if likeable is None:
             # Create new Likeable
             new_likeable = Likeable(
-                user_id = current_user.id,
+                user_id = user_id,
+                likeable_type = likeable_type,
                 likeable_id = likeable_id,
-                likeable_name = likeable_name,
                 value = value
             )
             try:
@@ -41,36 +39,66 @@ class Likeables():
 
         else:
             # Remove Likeable
-            return self.remove(likeable_id)
+            return self.remove(self, user_id, likeable_type, likeable_id)
 
         return 200
 
-    def remove(self, likeable_id):
+    def remove(self, user_id, likeable_type, likeable_id):
         """
         Remove a Likeable entry
         """
-
         # Fetch likeable
-        current_user = flask_praetorian.current_user()
-        like = Likeable.query.filter_by(and_(
-                Likeable.user_id == current_user.id, 
+        likeable = Likeable.query.filter(and_(
+                Likeable.user_id == user_id, 
+                Likeable.likeable_type == likeable_type,
                 Likeable.likeable_id == likeable_id
             )).first()
 
-        if like is None:
+        if likeable is None:
             return 404
 
         try:
-            db.session.delete(like)
+            db.session.delete(likeable)
             db.session.commit()
         except Exception:
             return 500
 
         return 200
 
-    # def dislike(self, likeable_id, likeable_name):
-    #     """
-    #     Dislike a model
-    #     """
+    def getCount(self, likeable_type, likeable_id):
+        """
+        Get Like/Dislike count for specified Likeable id
+        """
+        like_count = Likeable.query.filter(and_(
+                Likeable.likeable_id == likeable_id,
+                Likeable.likeable_type == likeable_type,
+                Likeable.value == 1, 
+            )).count()
 
-    #     current_user = flask_praetorian.current_user()
+        dislike_count = Likeable.query.filter(and_(
+                Likeable.likeable_id == likeable_id,
+                Likeable.likeable_type == likeable_type,
+                Likeable.value == 0, 
+            )).count()
+
+        response = {
+            'like_count': like_count,
+            'dislike_count': dislike_count,
+        }
+
+        return response
+
+    def getUserSentiment(self, user_id, likeable_type, likeable_id):
+        """
+        Get User Sentiment by Likeable id
+        """
+
+        likeable = Likeable.query.filter(and_(
+                Likeable.user_id == user_id,
+                Likeable.likeable_type == likeable_type,
+                Likeable.likeable_id == likeable_id,
+            )).first()
+
+        user_sentiment = None if likeable == None else likeable.value
+
+        return { 'user_sentiment': user_sentiment }

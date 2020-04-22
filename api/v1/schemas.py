@@ -170,13 +170,15 @@ class ReviewSchema(ma.ModelSchema):
     game = fields.Nested(nested_game_schema)
     release = fields.Nested(release_schema)
     likeables = fields.Nested(likeables_schema)
+    likes = fields.Int()
+    dislikes = fields.Int()
 
     class Meta:
         model = Review
         sqla_session = db.session
 
-review_schema = ReviewSchema()
-reviews_schema = ReviewSchema(many=True)
+review_schema = ReviewSchema(exclude=("likeables",))
+reviews_schema = ReviewSchema(exclude=("likeables",), many=True)
 review_post_schema = ReviewSchema(only=("game.id", "summary", "content", "score", "user", "release"))
 review_patch_schema = ReviewSchema(only=("id", "summary", "content"))   
 
