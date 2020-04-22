@@ -22,8 +22,8 @@ class Likeable(db.Model):
 
     user = db.relationship('User')
 
-    # def __repr__(self):
-    #     return '<Likeable %r>' % self.value
+    def __repr__(self):
+        return '<Likeable %r>' % self.value
 
 @event.listens_for(HasLikes, 'mapper_configured', propagate=True)
 def setup_listener(mapper, class_):
