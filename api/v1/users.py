@@ -29,13 +29,13 @@ class UserList(Resource):
         users = User.query.all()
         return users_schema.dump(users)
 
-@api.route('/<int:id>')
+@api.route('/<string:username>')
 class SingleUser(Resource):
-    def get(self, id):
+    def get(self, username):
         """
-        List User by id
+        List User by username
         """
-        user = User.query.filter_by(id=id).first()
+        user = User.query.filter_by(username=username).first()
         if user is None:
             return { 'message': 'User does not exist'}, 404
 
