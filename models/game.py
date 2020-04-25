@@ -15,6 +15,7 @@ class Game(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, unique=True, nullable=False)
+    slug = db.Column(db.String, unique=True, nullable=False)
     synopsis = db.Column(db.Text, nullable=False)
     icon = db.Column(db.String, unique=True, nullable=False)
     banner = db.Column(db.String, unique=True, nullable=False)

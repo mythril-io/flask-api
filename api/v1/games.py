@@ -3,7 +3,7 @@ from flask import request, json
 from flask_restx import Namespace, Resource, Api, fields
 from extensions import guard, db, upload_img, delete_img
 from marshmallow import ValidationError, INCLUDE
-from utilities import get_auto_increment, base64_to_pillow_img, pillow_img_to_bytes
+from utilities import get_auto_increment, base64_to_pillow_img, pillow_img_to_bytes, slugify_text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_, and_
 
@@ -99,7 +99,8 @@ class Games(Resource):
             # Set Authenticated User
             current_user = flask_praetorian.current_user()
             req['user'] = user_schema.dump(current_user)
-            
+            req['slug'] = slugify_text(req['title'])
+
             # Validate        
             try:
                 new_game = game_schema.load(req)
@@ -153,7 +154,7 @@ class SingleGame(Resource):
             db.session.commit()
         except SQLAlchemyError:
             return { 'error': 'Unable to update view count' }, 500
-
+        
         return game_schema.dump(game)
     
     @flask_praetorian.roles_required('admin')
@@ -171,6 +172,7 @@ class SingleGame(Resource):
 
             icon_name = game.icon
             banner_name = game.banner
+            req['slug'] = slugify_text(req['title'])
 
             # Validate        
             try:
