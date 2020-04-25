@@ -3,6 +3,7 @@ from extensions import db
 from PIL import Image
 from io import BytesIO
 import base64
+from slugify import slugify
 
 def get_auto_increment(table_name):
     """
@@ -92,3 +93,6 @@ def base64_validation(base64_string, max_file_size):
         return False
 
     return True
+
+def slugify_text(text):
+    return slugify(text, replacements=([['\'', '']]))

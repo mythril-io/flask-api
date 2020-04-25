@@ -23,6 +23,7 @@ python-dotenv = "*"
 flask-migrate = "*"
 gunicorn = "*"
 requests = "*"
+python-slugify = "*"
 
 [requires]
 python_version = "3.8"

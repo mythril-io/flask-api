@@ -136,11 +136,11 @@ class GameSchema(ma.ModelSchema):
     class Meta:
         model = Game
         sqla_session = db.session
-        fields = ("id", "title", "synopsis", "icon", "banner", "developer", "genres", "releases", "score", "library_count", "score_rank", "popularity_rank", "trending_page_views", "user")
+        fields = ("id", "title", "slug", "synopsis", "icon", "banner", "developer", "genres", "releases", "score", "library_count", "score_rank", "popularity_rank", "trending_page_views", "user")
 
 game_schema = GameSchema(exclude=['user'])
 games_schema = GameSchema(many=True, exclude=['releases'])
-nested_game_schema = GameSchema(only=("id", "title", "synopsis", "icon", "banner", "developer"))
+nested_game_schema = GameSchema(only=("id", "title", "slug", "synopsis", "icon", "banner", "developer"))
 
 # LibraryEntrySchema
 class LibraryEntrySchema(ma.ModelSchema):
