@@ -1,9 +1,10 @@
 from models import *
-from extensions import ma, db
+from extensions import db
 from marshmallow import fields, validate
+from marshmallow_sqlalchemy import ModelSchema
 
 # DateTypeSchema
-class DateTypeSchema(ma.ModelSchema):  
+class DateTypeSchema(ModelSchema):  
     class Meta:
         model = DateType
         sqla_session = db.session
@@ -13,7 +14,7 @@ date_type_schema = DateTypeSchema()
 date_types_schema = DateTypeSchema(many=True)
 
 # DeveloperSchema
-class DeveloperSchema(ma.ModelSchema):   
+class DeveloperSchema(ModelSchema):   
     class Meta:
         model = Developer
         sqla_session = db.session
@@ -23,7 +24,7 @@ developer_schema = DeveloperSchema()
 developers_schema = DeveloperSchema(many=True)
 
 # GenreSchema
-class GenreSchema(ma.ModelSchema):
+class GenreSchema(ModelSchema):
     class Meta:
         model = Genre
         sqla_session = db.session
@@ -33,7 +34,7 @@ genre_schema = GenreSchema()
 genres_schema = GenreSchema(many=True)
 
 # PlatformSchema
-class PlatformSchema(ma.ModelSchema):  
+class PlatformSchema(ModelSchema):  
     class Meta:
         model = Platform
         sqla_session = db.session
@@ -43,7 +44,7 @@ platform_schema = PlatformSchema()
 platforms_schema = PlatformSchema(many=True)
 
 # PublisherSchema
-class PublisherSchema(ma.ModelSchema): 
+class PublisherSchema(ModelSchema): 
     class Meta:
         model = Publisher
         sqla_session = db.session
@@ -53,7 +54,7 @@ publisher_schema = PublisherSchema()
 publishers_schema = PublisherSchema(many=True)
 
 # RegionSchema
-class RegionSchema(ma.ModelSchema):  
+class RegionSchema(ModelSchema):  
     class Meta:
         model = Region
         sqla_session = db.session
@@ -63,7 +64,7 @@ region_schema = RegionSchema()
 regions_schema = RegionSchema(many=True)
 
 # RoleSchema
-class RoleSchema(ma.ModelSchema):  
+class RoleSchema(ModelSchema):  
     class Meta:
         model = Role
         sqla_session = db.session
@@ -73,7 +74,7 @@ role_schema = RoleSchema()
 roles_schema = RoleSchema(many=True)
 
 # PlayStatusSchema
-class PlayStatusSchema(ma.ModelSchema):  
+class PlayStatusSchema(ModelSchema):  
     class Meta:
         model = PlayStatus
         sqla_session = db.session
@@ -83,7 +84,7 @@ play_status_schema = PlayStatusSchema()
 play_statuses_schema = PlayStatusSchema(many=True)
 
 # UserSchema
-class UserSchema(ma.ModelSchema):
+class UserSchema(ModelSchema):
     email = fields.Email(required=True, load_only=True)
     username = fields.String(required=True, validate=[validate.Length(min=4, max=250)])
     password = fields.String(required=True, validate=[validate.Length(min=8, max=250)], load_only=True)
@@ -100,7 +101,7 @@ users_schema = UserSchema(only=("id", "username", "avatar", "rolenames"), many=T
 nested_user_schema = UserSchema(only=("id", "username", "avatar", "rolenames"))
 
 # LikeableSchema
-class LikeableSchema(ma.ModelSchema):  
+class LikeableSchema(ModelSchema):  
     user = fields.Nested(nested_user_schema)
 
     class Meta:
@@ -111,7 +112,7 @@ class LikeableSchema(ma.ModelSchema):
 likeables_schema = LikeableSchema(many=True)
 
 # ReleaseSchema
-class ReleaseSchema(ma.ModelSchema):
+class ReleaseSchema(ModelSchema):
     platform = fields.Nested(platform_schema)
     publisher = fields.Nested(publisher_schema)
     codeveloper = fields.Nested(developer_schema, allow_none=True)
@@ -127,7 +128,7 @@ release_schema = ReleaseSchema(session=db.session)
 releases_schema = ReleaseSchema(many=True, session=db.session)
 
 # GameSchema
-class GameSchema(ma.ModelSchema):
+class GameSchema(ModelSchema):
     developer = fields.Nested(developer_schema)
     genres = fields.Nested(genres_schema)
     releases = fields.Nested(releases_schema)
@@ -143,7 +144,7 @@ games_schema = GameSchema(many=True, exclude=['releases'])
 nested_game_schema = GameSchema(only=("id", "title", "slug", "synopsis", "icon", "banner", "developer"))
 
 # LibraryEntrySchema
-class LibraryEntrySchema(ma.ModelSchema):
+class LibraryEntrySchema(ModelSchema):
     game = fields.Nested(nested_game_schema)
     release = fields.Nested(release_schema)
     user = fields.Nested(user_schema)
@@ -162,7 +163,7 @@ library_entry_post_schema = LibraryEntrySchema(only=("game.id", "digital", "play
 library_entry_patch_schema = LibraryEntrySchema(only=("id", "digital", "play_status", "score", "own", "notes", "hours"))    
 
 # ReviewSchema
-class ReviewSchema(ma.ModelSchema):
+class ReviewSchema(ModelSchema):
     summary = fields.String(required=True, validate=[validate.Length(min=60, max=255)])
     content = fields.String(required=True, validate=[validate.Length(min=500)])
     score = fields.Int(required=True, validate=validate.Range(min=1, max=100))
@@ -183,7 +184,7 @@ review_post_schema = ReviewSchema(only=("game.id", "summary", "content", "score"
 review_patch_schema = ReviewSchema(only=("id", "summary", "content"))   
 
 # RecommendationSchema
-class RecommendationSchema(ma.ModelSchema):
+class RecommendationSchema(ModelSchema):
     content = fields.String(required=True, validate=[validate.Length(min=200)])
     user = fields.Nested(user_schema)
     game = fields.Nested(nested_game_schema)
@@ -201,7 +202,7 @@ recommendation_post_schema = RecommendationSchema(only=("content", "user", "game
 recommendation_patch_schema = RecommendationSchema(only=("id", "content"))   
 
 # FavouriteSchema
-class FavouriteSchema(ma.ModelSchema):
+class FavouriteSchema(ModelSchema):
     user = fields.Nested(user_schema)
     game = fields.Nested(nested_game_schema)
     release = fields.Nested(release_schema)
@@ -216,7 +217,7 @@ favourite_post_schema = FavouriteSchema(only=("game.id", "user", "release"))
 favourite_patch_schema = FavouriteSchema(only=("release",))
 
 # TagSchema
-class TagSchema(ma.ModelSchema):
+class TagSchema(ModelSchema):
     parent = fields.Nested(lambda: TagSchema(exclude=("parent",)), allow_none=True)
 
     class Meta:
@@ -230,7 +231,7 @@ tags_schema = TagSchema(many=True)
 
 
 # PostSchema
-class PostSchema(ma.ModelSchema):
+class PostSchema(ModelSchema):
     user = fields.Nested(nested_user_schema)
     discussion_id = fields.Integer()
     parent_post_id = fields.Integer()
@@ -245,7 +246,7 @@ post_post_schema = PostSchema(only=("body", "discussion_id", "parent_post_id"))
 post_patch_schema = PostSchema(only=("body",))
 
 # DiscussionSchema
-class DiscussionSchema(ma.ModelSchema):
+class DiscussionSchema(ModelSchema):
     user = fields.Nested(nested_user_schema)
     games = fields.Nested(GameSchema(only=("id", "title"), many=True), allow_none=True)
     tags = fields.Nested(tags_schema)
