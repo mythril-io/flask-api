@@ -14,3 +14,4 @@ sql = 'UPDATE games SET trending_page_views = 0'
 # Execute query
 with engine.connect() as con:
     rs = con.execute(sql)
+    print("Trending views have been reset")
